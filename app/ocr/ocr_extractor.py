@@ -20,6 +20,22 @@ def extract_text(processed_image, language="eng"):
             language=language
         )
 
+        if not isinstance(data, dict):
+            return OCRResult(
+                text="",
+                confidence=0.0,
+                language=language,
+                error="OCR_INVALID_DATA"
+            )
+
+        if "text" not in data or "conf" not in data:
+            return OCRResult(
+                text="",
+                confidence=0.0,
+                language=language,
+                error="OCR_INVALID_DATA"
+            )
+
         text_parts = []
         confidence_values = []
 

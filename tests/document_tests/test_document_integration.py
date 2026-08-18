@@ -71,3 +71,38 @@ def test_ocr_to_document_to_analysis():
     assert analysis.text == "OCR integration test"
     assert analysis.word_count == 3
     assert analysis.has_text is True
+    
+def test_invalid_ocr_data_to_document_to_analysis():
+
+    ocr_result = OCRResult(
+        text="",
+        confidence=0.0,
+        language="eng",
+        error="OCR_INVALID_DATA",
+    )
+
+    document = extract_document_from_ocr(
+        ocr_result,
+        "invalid_ocr.png",
+    )
+
+    analysis = analyze_document(document)
+
+    assert isinstance(document, Document)
+    assert isinstance(analysis, DocumentAnalysis)
+
+    assert document.source == "invalid_ocr.png"
+    assert document.document_type == "image"
+    assert document.page_count == 1
+
+    assert len(document.pages) == 1
+    assert document.pages[0].text == ""
+
+    assert document.metadata["confidence"] == 0.0
+    assert document.metadata["language"] == "eng"
+    assert document.metadata["error"] == "OCR_INVALID_DATA"
+
+    assert analysis.page_count == 1
+    assert analysis.text == ""
+    assert analysis.word_count == 0
+    assert analysis.has_text is False

@@ -30,17 +30,13 @@ def run_ocr(processed_image):
     except Exception as error:
         raise RuntimeError("OCR_FAILED") from error
     
-def run_ocr_data(processed_image,language="eng"):
-    data = pytesseract.image_to_data(
-    processed_image,
-    lang=language,
-    output_type=pytesseract.Output.DICT
-)
+def run_ocr_data(processed_image, language="eng"):
     """
     Run Tesseract OCR and return structured OCR data.
 
     Args:
         processed_image: OpenCV image prepared for OCR.
+        language: Tesseract language code.
 
     Returns:
         Dictionary containing OCR text, confidence, and positional data.
@@ -52,6 +48,7 @@ def run_ocr_data(processed_image,language="eng"):
     try:
         data = pytesseract.image_to_data(
             processed_image,
+            lang=language,
             output_type=pytesseract.Output.DICT
         )
 
@@ -62,5 +59,3 @@ def run_ocr_data(processed_image,language="eng"):
 
     except Exception as error:
         raise RuntimeError("OCR_FAILED") from error
-    
-    
