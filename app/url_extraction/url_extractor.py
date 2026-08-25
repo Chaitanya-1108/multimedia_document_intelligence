@@ -30,6 +30,22 @@ def _clean_url_boundary(url: str) -> str:
     return url
 
 
+def _deduplicate_urls(results: list[URLData]) -> list[URLData]:
+    """Remove exact duplicate URLs while preserving first-seen order."""
+
+    seen: set[str] = set()
+    unique_results: list[URLData] = []
+
+    for result in results:
+        if result.url in seen:
+            continue
+
+        seen.add(result.url)
+        unique_results.append(result)
+
+    return unique_results
+
+
 def _extract_explicit_urls(text: str) -> list[URLData]:
     """Extract HTTP and HTTPS URLs from text."""
 
@@ -118,23 +134,8 @@ def extract_urls(text: str) -> list[URLData]:
     )
 
     results = sorted(
-    explicit_results + bare_domain_results,
-    key=lambda result: result.start,
+        explicit_results + bare_domain_results,
+        key=lambda result: result.start,
     )
 
     return _deduplicate_urls(results)
-    
-def _deduplicate_urls(results: list[URLData]) -> list[URLData]:
-    """Remove exact duplicate URLs while preserving first-seen order."""
-
-    seen: set[str] = set()
-    unique_results: list[URLData] = []
-
-    for result in results:
-        if result.url in seen:
-            continue
-
-        seen.add(result.url)
-        unique_results.append(result)
-
-    return unique_results

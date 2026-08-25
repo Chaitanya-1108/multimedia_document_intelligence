@@ -298,3 +298,55 @@ def test_positions_remain_correct_after_duplicate_removal():
 
     assert text[results[0].start:results[0].end] == "https://example.com"
     assert text[results[1].start:results[1].end] == "https://other.com"
+    
+def test_empty_string_returns_empty_list():
+    assert extract_urls("") == []
+
+
+def test_whitespace_only_text_returns_empty_list():
+    assert extract_urls("   \n\t  ") == []
+
+
+def test_extracted_url_position_matches_source_text():
+    text = "Security link: https://example.com/login"
+
+    results = extract_urls(text)
+
+    assert len(results) == 1
+
+    result = results[0]
+
+    assert text[result.start:result.end] == result.url
+
+
+def test_domain_is_extracted_without_path():
+    text = "Visit https://example.com/login"
+
+    results = extract_urls(text)
+
+    assert len(results) == 1
+    assert results[0].domain == "example.com"
+
+
+def test_mixed_url_types_are_returned_in_source_order():
+    text = (
+        "example.com "
+        "https://secure.example.org/login "
+        "www.test.net"
+    )
+
+    results = extract_urls(text)
+
+    assert len(results) == 3
+
+    assert results[0].url == "example.com"
+    assert results[1].url == "https://secure.example.org/login"
+    assert results[2].url == "www.test.net"
+
+
+def test_no_url_text_does_not_raise_error():
+    text = "This is ordinary OCR text without a web address."
+
+    results = extract_urls(text)
+
+    assert results == []
